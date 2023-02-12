@@ -53,39 +53,16 @@ class MainViewModel {
     }
     private let sevillaLocation = CLLocation(latitude: 37.3828300, longitude: -5.9731700)
     
-    func fetchWeatherInfo(completion: @escaping (() -> Void)) {
-        fetchMadridWeather {
-            self.fetchBarcelonaWeather {
-                self.fetchSevillaWeather {
-                    completion()
-                }
-            }
-        }
-    }
-    
-    private func fetchMadridWeather(completion: @escaping (() -> Void)) {
-        dataSource.fetchWeather(location: madridLocation) { weatherInfo in
-            self.madridWeatherInfo = weatherInfo
-            completion()
-        } errorCallback: { error in
-            debugPrint(error)
-        }
-    }
-    
-    private func fetchBarcelonaWeather(completion: @escaping (() -> Void)) {
-        dataSource.fetchWeather(location: barcelonaLocation) { weatherInfo in
-            self.barcelonaWeatherInfo = weatherInfo
-            completion()
-        } errorCallback: { error in
-            debugPrint(error)
-        }
-    }
-    
-    private func fetchSevillaWeather(completion: @escaping (() -> Void)) {
-        dataSource.fetchWeather(location: sevillaLocation) { weatherInfo in
-            self.sevillaWeatherInfo = weatherInfo
-            completion()
-        } errorCallback: { error in
+    func fetchWeatherInfo() async {
+        do {
+            async let madridInfo = dataSource.fetchWeather(location: madridLocation)
+            async let barcelonaInfo = dataSource.fetchWeather(location: barcelonaLocation)
+            async let sevillaInfo = dataSource.fetchWeather(location: sevillaLocation)
+                        
+            self.madridWeatherInfo = try await madridInfo
+            self.barcelonaWeatherInfo = try await barcelonaInfo
+            self.sevillaWeatherInfo = try await sevillaInfo
+        } catch let error {
             debugPrint(error)
         }
     }

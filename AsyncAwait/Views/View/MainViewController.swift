@@ -23,11 +23,17 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        viewModel.fetchWeatherInfo {
-            self.setupMadridInfo()
-            self.setupBarcelonaInfo()
-            self.setupSevillaInfo()
+        Task {
+            await fetchWeatherInfo()
         }
+    }
+    
+    func fetchWeatherInfo() async {
+        await viewModel.fetchWeatherInfo()
+        
+        setupMadridInfo()
+        setupBarcelonaInfo()
+        setupSevillaInfo()
     }
     
     private func setupMadridInfo() {
